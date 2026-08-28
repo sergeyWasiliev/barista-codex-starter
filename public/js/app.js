@@ -15,18 +15,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 // =========================================================
 
 // Language Switcher
-document.getElementById('lang-select').addEventListener('change', (e) => handleLangChange(e.target.value));
+// document.getElementById('lang-select').addEventListener('change', (e) => handleLangChange(e.target.value));
 
 const langSelect = document.getElementById('lang-select');
 const langFlag = document.getElementById('current-lang-flag');
 const langText = document.getElementById('lang-text');
 
 function updateFlagIcon(lang) {
-    const iconName = (lang === 'en') ? 'gb' : lang;
+    const flagByLang = { en: 'gb', it: 'it', bg: 'bg' };
+    const flag = flagByLang[lang] || lang;
 
-    langFlag.src = `assets/flags/${iconName}.svg`;
-
-    langText.textContent = lang.toUpperCase();
+    langFlag.src = `assets/flags/${flag}.svg`;
+    langText.textContent = lang.toUpperCase(); // EN / IT / BG
 }
 
 langSelect.addEventListener('change', (e) => {
