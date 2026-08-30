@@ -8,3 +8,10 @@ export async function getById(id: string): Promise<Bean> {
     if (!bean) throw new Error('NOT_FOUND')
     return bean
 }
+
+// ===== DELETE =====
+
+export async function remove(id: string): Promise<void> {
+    const deleted = await repo.remove(id)
+    if (!deleted) throw new Error('NOT_FOUND')
+}
