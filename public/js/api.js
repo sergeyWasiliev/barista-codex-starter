@@ -85,11 +85,17 @@ export const apiClient = {
         return await res.json();
     },
 
-    // // 3. CREATE
-    // async createBean(beanData) {
-    //     console.log('API: Creating bean...', beanData);
-    //     mockBeans.push({ ...beanData, id: String(Date.now()), recipes: [] });
-    // },
+    // 3. CREATE
+    async createBean(beanData) {
+        const res = await fetch(`${API_BASE}/beans`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(beanData)
+
+        });
+        if(!res.ok) throw new Error('Failed create bean');
+        return await res.json();
+    },
     //
     // // 4. UPDATE
     // async updateBean(id, beanData) {

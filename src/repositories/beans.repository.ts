@@ -1,7 +1,7 @@
-import { promises as fs } from 'fs'
+import {promises as fs} from 'fs'
 import path from 'path'
-import { Bean } from '../types/beans'
-import { DATA_DIR } from '../config/paths'
+import {Bean} from '../types/beans'
+import {DATA_DIR} from '../config/paths'
 
 async function readBean(fullPath: string): Promise<Bean> {
     return JSON.parse(await fs.readFile(fullPath, 'utf-8')) as Bean
@@ -40,3 +40,19 @@ export async function remove(id: string): Promise<boolean> {
     await fs.unlink(fullPath)
     return true
 }
+
+// ====== UPDATE ======
+// export async function update(id:string, data):Promise<Bean>{
+//     const fullPath = await findFileById(id)
+//     if(!fullPath) return null
+//
+// }
+
+// ====== CREATE ======
+export async function create(bean: Bean) {
+    const fullPath = path.join(DATA_DIR, `${bean.id}.json`)
+    const beanText = JSON.stringify(bean, null, 2)
+    await fs.writeFile(fullPath, beanText, "utf-8")
+    return bean;
+}
+

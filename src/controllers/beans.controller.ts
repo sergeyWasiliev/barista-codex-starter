@@ -30,3 +30,17 @@ export async function deleteBean(req: Request<{ id: string }>, res: Response) {
         throw e
     }
 }
+
+// ====== CREATE ======
+export async function createBean(req:Request, res:Response){
+    try {
+        const body = await service.create(req.body);
+        res.status(201).json(body);
+    }catch (e){
+        if (e instanceof Error && e.message === 'BAD_REQUEST'){
+            res.status(400).json({message:'No valid data'})
+            return
+        }
+        throw e
+    }
+}
