@@ -1,0 +1,13 @@
+---
+description: Контракт JSON карточки зерна и рецептов
+globs: "{data,src/types,samples}/**/*.{json,ts}"
+alwaysApply: false
+---
+
+# Data contract
+
+Поля `Bean`: `id`, `title`, `country`, `description`, `roasterComment`, `imageUrl`, `details` (`process`, `region`, `variety[]`, `scaScore`), `flavorProfile` (`notes[]`, `acidity`, `sweetness`, `bitterness`), `recipes[]`.
+
+`Recipe`: `id`, `method`, `grindSize`, `waterTemp`, `doseIn`, `doseOut`, `timeTotal`, `steps[]`.
+
+Эталон: `data/beans/kenya-nakuru.json` и `src/types/beans.ts`. Не добавлять поля Beta (`type`) без запроса.

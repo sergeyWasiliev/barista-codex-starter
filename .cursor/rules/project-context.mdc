@@ -1,0 +1,33 @@
+---
+description: Статус проекта — что уже сделано и что впереди (Alpha/Beta)
+alwaysApply: true
+---
+
+# Статус Barista Codex
+
+Источник деталей: `readme/2. Technical Specification.md`. Это правило не заменяет ТЗ.
+
+## Сделано (Alpha, частично)
+
+- Каркас Express: `cors`, `morgan('dev')`, `express.json()`, статика `public/`
+- Слои: `src/routes` → `controllers` → `services` → `repositories`
+- Типы `Bean` / `Recipe` в `src/types/beans.ts`
+- JSON-хранилище: `data/beans/*.json`, пути в `src/config/paths.ts`
+- API: `GET /api/beans`, `GET /api/beans/:id`, `DELETE /api/beans/:id` (204 / 404)
+- Фронт: `apiClient.getAllBeans`, `getBeanById`, `deleteBean` через `fetch`
+
+## Не сделано (Alpha, обязательно)
+
+- `POST /api/beans` — UUID, валидация `title`+`country`, House Standard recipes
+- `PUT /api/beans/:id` — merge существующих `recipes` с телом запроса
+- `GET /api/i18n/:lang` — парсинг `locales/{lang}.xlf` (XLIFF 2.0) → JSON
+- Фронт: `createBean`, `updateBean`, `getTranslations` ещё закомментированы/заглушки
+- Папка `locales/` с `it.xlf` / `bg.xlf` может отсутствовать — создать при i18n
+
+## Впереди (Beta, не начинать без явной просьбы)
+
+SQL вместо JSON, переводы контента в БД, `multer`, шаги рецептов, `type` + фильтр `?type=`.
+
+## Как обновлять это правило
+
+После закрытия фичи одной строкой перенеси её из «Не сделано» в «Сделано». Не раздувай файл историей чатов.

@@ -1,0 +1,23 @@
+---
+description: Соглашения фронтенда Vanilla JS — apiClient и UI
+globs: public/**/*.{js,html,css}
+alwaysApply: false
+---
+
+# Фронтенд
+
+- `API_BASE = 'http://localhost:3000/api'`
+- Все запросы к бэкенду только через `public/js/api.js` (`apiClient`)
+- Не возвращать мок-массив, если эндпоинт на сервере уже есть
+- DELETE: `fetch(url, { method: 'DELETE' })`; тело 204 не парсить через `.json()`
+- После мутаций обновлять список (`loadList`) и сбрасывать детальный вид при удалении
+- `imageUrl` — путь вида `assets/flags/ke.svg`, не upload на Alpha
+- Не переписывать всю вёрстку, если задача — один метод API
+
+```javascript
+// ❌ BAD
+return await res.json(); // на 204 пустое тело
+
+// ✅ GOOD
+if (!res.ok) throw new Error(`Failed to delete bean: ${id}`);
+```

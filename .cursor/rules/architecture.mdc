@@ -1,0 +1,40 @@
+---
+description: Слои Express и ответственность файлов в src/
+globs: src/**/*.ts
+alwaysApply: false
+---
+
+# Слои
+
+```
+index.ts          → app, middleware, listen
+routes/*.ts       → только HTTP-метод + путь + controller
+controllers/*.ts  → req/res, статусы, JSON; вызывает service
+services/*.ts     → правила, NOT_FOUND / валидация
+repositories/*.ts → fs, path, JSON parse/stringify
+types/*.ts        → контракт данных
+config/paths.ts   → ROOT, DATA_DIR, PUBLIC_DIR, ENV_PATH
+```
+
+```typescript
+// ❌ BAD — fs в контроллере
+export async function deleteBean(req, res) {
+  await fs.unlink(`data/beans/${req.params.id}.json`)
+}
+
+// ✅ GOOD
+export async function deleteBean(req: Request<{ id: string }>, res: Response) {
+  try {
+    await service.remove(req.params.id)
+    res.status(204).end()
+  } catch (e) {
+    if (e instanceof Error && e.message === 'NOT_FOUND') {
+      res.status(404).json({ message: 'Bean not found' })
+      return
+    }
+    throw e
+  }
+}
+```
+
+`Request<{ id: string }>` — тип **params**, не «id это объект». `req.params.id` — `string`.
