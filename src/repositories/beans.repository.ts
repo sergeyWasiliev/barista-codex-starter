@@ -42,11 +42,13 @@ export async function remove(id: string): Promise<boolean> {
 }
 
 // ====== UPDATE ======
-// export async function update(id:string, data):Promise<Bean>{
-//     const fullPath = await findFileById(id)
-//     if(!fullPath) return null
-//
-// }
+export async function update(id: string, bean: Bean): Promise<Bean | null> {
+    const fullPath = await findFileById(id)
+    if (!fullPath) return null
+    await fs.writeFile(fullPath, JSON.stringify(bean, null, 2), "utf-8")
+    return bean
+
+}
 
 // ====== CREATE ======
 export async function create(bean: Bean) {

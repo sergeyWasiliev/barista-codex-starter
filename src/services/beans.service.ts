@@ -2,6 +2,9 @@ import {type Bean, Recipe} from '../types/beans'
 import * as repo from '../repositories/beans.repository'
 import {v4 as uuidv4} from "uuid"
 import {defaultRecipes} from "./constans";
+import {findById} from "../repositories/beans.repository";
+import {beansRouter} from "../routes/beans.routes";
+import {read} from "node:fs";
 
 export const getAll = () => repo.findAll()
 
@@ -18,9 +21,24 @@ export async function remove(id: string): Promise<void> {
     if (!deleted) throw new Error('NOT_FOUND')
 }
 
+// ====== UPDATE ======
+export async function update(id: string, body: Omit<Bean, 'id' | 'recipes'>) {
+    const existing = await repo.findById(id)
+    if (!existing) throw new Error('NOT_FOUND')
+    const merged = {
+        ...existing,
+        ...body,
+        id: existing.id,
+        recipes: existing.recipes
+    }
+    const saved = await repo.update(id, merged)
+    if(!saved) throw new Error('NOT_FOUND')
+    return saved
+}
+
 // ====== CREATE ======
 export async function create(beanCreate: Omit<Bean, 'id' | 'recipes'> & { recipes?: Recipe[] }): Promise<Bean> {
-    if (!beanCreate.title?.trim() || !beanCreate.country?.trim()){
+    if (!beanCreate.title?.trim() || !beanCreate.country?.trim()) {
         throw new Error('BAD_REQUEST');
     }
 

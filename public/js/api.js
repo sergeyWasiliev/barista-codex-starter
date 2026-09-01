@@ -89,23 +89,28 @@ export const apiClient = {
     async createBean(beanData) {
         const res = await fetch(`${API_BASE}/beans`, {
             method: 'POST',
-            headers: {'Content-Type':'application/json'},
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(beanData)
 
         });
-        if(!res.ok) throw new Error('Failed create bean');
+        if (!res.ok) throw new Error('Failed create bean');
         return await res.json();
     },
-    //
-    // // 4. UPDATE
-    // async updateBean(id, beanData) {
-    //     console.log(`API: Updating bean ${id}...`, beanData);
-    //     // Mock update logic needed for full test, but console log is enough for now
-    // },
-    //
+
+    // 4. UPDATE
+    async updateBean(id, beanData) {
+        const res = await fetch(`${API_BASE}/beans/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(beanData)
+        });
+        if (!res.ok) throw new Error('Failed update bean')
+        return await res.json()
+    },
+
     // 5. DELETE
     async deleteBean(id) {
-        const res = await fetch(`${API_BASE}/beans/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${API_BASE}/beans/${id}`, {method: 'DELETE'});
         if (!res.ok) throw new Error(`Failed to delete bean: ${id}`);
     },
     //
