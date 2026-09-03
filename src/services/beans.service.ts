@@ -1,10 +1,7 @@
 import {type Bean, Recipe} from '../types/beans'
 import * as repo from '../repositories/beans.repository'
-import {v4 as uuidv4} from "uuid"
+import {randomUUID} from "node:crypto";
 import {defaultRecipes} from "./constans";
-import {findById} from "../repositories/beans.repository";
-import {beansRouter} from "../routes/beans.routes";
-import {read} from "node:fs";
 
 export const getAll = () => repo.findAll()
 
@@ -21,41 +18,70 @@ export async function remove(id: string): Promise<void> {
     if (!deleted) throw new Error('NOT_FOUND')
 }
 
-// ====== UPDATE ======
-export async function update(id: string, body: Omit<Bean, 'id' | 'recipes'>) {
+// ====== UPDATE PUT / CREATE POST======
+
+type NewBean = Omit<Bean, 'id' | 'recipes'> & { recipes?: Recipe[] }
+
+function normalize(data: unknown): NewBean {   // не экспортируется = private
+    const d = data as Partial<NewBean>
+    if (!d?.title?.trim() || !d?.country?.trim()) throw new Error('BAD_REQUEST')
+
+    return {
+        title: d.title.trim(),
+        country: d.country.trim(),
+        description: d.description?.trim() ?? '',
+        roasterComment: d.roasterComment?.trim() ?? '',
+        imageUrl: d.imageUrl?.trim() ?? '',
+        details: {
+            process: d.details?.process?.trim() ?? 'Unknown',
+            region: d.details?.region?.trim() ?? 'Unknown',
+            variety: d.details?.variety ?? [],
+            scaScore: d.details?.scaScore ?? 0
+        },
+        flavorProfile: {
+            notes: d.flavorProfile?.notes ?? [],
+            acidity: d.flavorProfile?.acidity ?? 0,
+            sweetness: d.flavorProfile?.sweetness ?? 0,
+            bitterness: d.flavorProfile?.bitterness ?? 0
+        }
+    }
+}
+
+// ====== UPDATE PUT======
+export async function update(id: string, body: NewBean) {
+    const bodyNormalize = normalize(body)
     const existing = await repo.findById(id)
+
     if (!existing) throw new Error('NOT_FOUND')
-    const merged = {
+    const update_bean = {
         ...existing,
-        ...body,
+        ...bodyNormalize,
         id: existing.id,
         recipes: existing.recipes
     }
-    const saved = await repo.update(id, merged)
-    if(!saved) throw new Error('NOT_FOUND')
-    return saved
+    const saved_bean = await repo.update(id, update_bean)
+    if(!saved_bean) throw new Error('NOT_FOUND')
+    return saved_bean
 }
 
-// ====== CREATE ======
-export async function create(beanCreate: Omit<Bean, 'id' | 'recipes'> & { recipes?: Recipe[] }): Promise<Bean> {
-    if (!beanCreate.title?.trim() || !beanCreate.country?.trim()) {
-        throw new Error('BAD_REQUEST');
-    }
+// ====== CREATE POST ======
+export async function create(beanCreate: NewBean): Promise<Bean> {
+    let newBean: Bean
+    const id = randomUUID();
+    const bodyNormalize = normalize(beanCreate)
 
-    let bean: Bean
-    const id = uuidv4();
     if (beanCreate.recipes && beanCreate.recipes.length > 0) {
-        bean = {
+        newBean = {
             id: id,
-            ...beanCreate,
+            ...bodyNormalize,
             recipes: beanCreate.recipes
         };
     } else {
-        bean = {
+        newBean = {
             id: id,
-            ...beanCreate,
+            ...bodyNormalize,
             recipes: defaultRecipes()
         }
     }
-    return await repo.create(bean);
+    return await repo.create(newBean);
 }
