@@ -1,0 +1,49 @@
+{
+  "id": "a4447031-704a-4756-aa4a-6368f39e6f22",
+  "title": "ыыы",
+  "country": "вввв",
+  "description": "",
+  "imageUrl": "assets/flags/default.svg",
+  "roasterComment": "",
+  "details": {
+    "process": "Washed",
+    "scaScore": 0,
+    "region": "Unknown",
+    "variety": [
+      ""
+    ]
+  },
+  "flavorProfile": {
+    "notes": [
+      ""
+    ],
+    "acidity": 5,
+    "sweetness": 5,
+    "bitterness": 5
+  },
+  "recipes": [
+    {
+      "id": "440bc1c6-0673-478a-b2b9-32238ce9c71c",
+      "method": "V60",
+      "grindSize": "EK43 - 8.5",
+      "waterTemp": 96,
+      "doseIn": 18,
+      "doseOut": 300,
+      "timeTotal": "3:00",
+      "steps": [
+        "0:00 - Bloom 60g",
+        "0:45 - Pour to 300g"
+      ]
+    },
+    {
+      "id": "86b541d6-f24c-4441-b66d-4848e5893ea2",
+      "method": "Espresso",
+      "grindSize": "Mythos - 3.8",
+      "waterTemp": 93,
+      "doseIn": 18,
+      "doseOut": 36,
+      "timeTotal": "28s",
+      "steps": []
+    }
+  ]
+}

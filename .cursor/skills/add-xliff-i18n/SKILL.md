@@ -1,9 +1,16 @@
 ---
 name: add-xliff-i18n
-description: Adds UI localization via XLIFF 2.0 and GET /api/i18n/:lang. Use when the user asks for translations, IT, BG, XLIFF, locales, or getTranslations.
+description: >-
+  UI localization via XLIFF 2.0 and GET /api/i18n/:lang. Use for translations,
+  IT, BG, XLIFF, locales, getTranslations. Default: mentor checklist; write code
+  only if the user explicitly asks to implement.
 ---
 
 # Add XLIFF i18n
+
+## Режим
+
+По умолчанию наставник: план слоёв, ревью кода ученика. Патч в файлы — только по явной просьбе («напиши», «реализуй»).
 
 ## Контракт
 

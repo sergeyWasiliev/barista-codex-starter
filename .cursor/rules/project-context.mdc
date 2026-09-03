@@ -13,15 +13,13 @@ alwaysApply: true
 - Слои: `src/routes` → `controllers` → `services` → `repositories`
 - Типы `Bean` / `Recipe` в `src/types/beans.ts`
 - JSON-хранилище: `data/beans/*.json`, пути в `src/config/paths.ts`
-- API: `GET /api/beans`, `GET /api/beans/:id`, `DELETE /api/beans/:id` (204 / 404)
-- Фронт: `apiClient.getAllBeans`, `getBeanById`, `deleteBean` через `fetch`
+- API: `GET /api/beans`, `GET /api/beans/:id`, `POST /api/beans`, `PUT /api/beans/:id`, `DELETE /api/beans/:id`
+- Фронт: `apiClient.getAllBeans`, `getBeanById`, `createBean`, `updateBean`, `deleteBean` через `fetch`
 
 ## Не сделано (Alpha, обязательно)
 
-- `POST /api/beans` — UUID, валидация `title`+`country`, House Standard recipes
-- `PUT /api/beans/:id` — merge существующих `recipes` с телом запроса
 - `GET /api/i18n/:lang` — парсинг `locales/{lang}.xlf` (XLIFF 2.0) → JSON
-- Фронт: `createBean`, `updateBean`, `getTranslations` ещё закомментированы/заглушки
+- Фронт: `getTranslations` ещё закомментирован/заглушка
 - Папка `locales/` с `it.xlf` / `bg.xlf` может отсутствовать — создать при i18n
 
 ## Впереди (Beta, не начинать без явной просьбы)
