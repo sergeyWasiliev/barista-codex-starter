@@ -1,0 +1,49 @@
+{
+  "id": "acfbc901-f6b4-4ed5-99f8-d7fe730f6229",
+  "title": "sadf",
+  "country": "Лимония",
+  "description": "",
+  "roasterComment": "",
+  "imageUrl": "assets/flags/cr.svg",
+  "details": {
+    "process": "Washed",
+    "region": "ev",
+    "variety": [
+      ""
+    ],
+    "scaScore": 0
+  },
+  "flavorProfile": {
+    "notes": [
+      ""
+    ],
+    "acidity": 5,
+    "sweetness": 5,
+    "bitterness": 5
+  },
+  "recipes": [
+    {
+      "id": "7def46ad-2ecd-45c8-8dcc-df103664091f",
+      "method": "V60",
+      "grindSize": "EK43 - 8.5",
+      "waterTemp": 96,
+      "doseIn": 18,
+      "doseOut": 300,
+      "timeTotal": "3:00",
+      "steps": [
+        "0:00 - Bloom 60g",
+        "0:45 - Pour to 300g"
+      ]
+    },
+    {
+      "id": "e2f1ddf5-2946-428c-b812-d0de9a4a7e0c",
+      "method": "Espresso",
+      "grindSize": "Mythos - 3.8",
+      "waterTemp": 93,
+      "doseIn": 18,
+      "doseOut": 36,
+      "timeTotal": "28s",
+      "steps": []
+    }
+  ]
+}
