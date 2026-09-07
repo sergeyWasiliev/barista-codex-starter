@@ -5,9 +5,12 @@ import dotenv from 'dotenv'
 import { beansRouter } from './routes/beans.routes'
 import { i18nRouter } from './routes/i18n.routes';
 import { ENV_PATH, PUBLIC_DIR } from './config/paths'
+import { initDb } from './db'
 
 dotenv.config({ path: ENV_PATH })
 const PORT = Number(process.env.PORT) || 3000
+
+initDb()
 
 const app = express()
 
