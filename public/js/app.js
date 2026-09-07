@@ -1,5 +1,5 @@
-import { apiClient } from './api.js';
-import { renderBeanList, renderBeanDetails, applyTranslations } from './render.js';
+import {apiClient} from './api.js';
+import {renderBeanList, renderBeanDetails, applyTranslations} from './render.js';
 
 // STATE
 let currentBeanId = null;
@@ -22,7 +22,7 @@ const langFlag = document.getElementById('current-lang-flag');
 const langText = document.getElementById('lang-text');
 
 function updateFlagIcon(lang) {
-    const flagByLang = { en: 'gb', it: 'it', bg: 'bg' };
+    const flagByLang = {en: 'gb', it: 'it', bg: 'bg'};
     const flag = flagByLang[lang] || lang;
 
     langFlag.src = `assets/flags/${flag}.svg`;
@@ -42,8 +42,8 @@ updateFlagIcon('en');
 document.getElementById('btn-add-bean').addEventListener('click', () => openModal());
 
 document.getElementById('btn-delete').addEventListener('click', async () => {
-    if(!currentBeanId) return;
-    if(confirm('Are you sure you want to delete this bean?')) {
+    if (!currentBeanId) return;
+    if (confirm('Are you sure you want to delete this bean?')) {
         await apiClient.deleteBean(currentBeanId);
         resetView();
         await loadList();
@@ -51,7 +51,7 @@ document.getElementById('btn-delete').addEventListener('click', async () => {
 });
 
 document.getElementById('btn-edit').addEventListener('click', async () => {
-    if(!currentBeanId) return;
+    if (!currentBeanId) return;
     const bean = await apiClient.getBeanById(currentBeanId);
     openModal(bean);
 });
@@ -140,9 +140,14 @@ async function loadList() {
 }
 
 async function handleLangChange(lang) {
-    const translations = await apiClient.getTranslations(lang);
-    if(translations && Object.keys(translations).length > 0) {
-        applyTranslations(translations);
+    try {
+        const translations = await apiClient.getTranslations(lang);
+        if (translations && Object.keys(translations).length > 0) {
+            applyTranslations(translations);
+        }
+    } catch (e) {
+        console.error(e);
+        // сюда попадаем при throw из getTranslations
     }
 }
 
