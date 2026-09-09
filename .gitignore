@@ -10,3 +10,10 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+.idea/*
+.cursor/*
+dist/
+node_modules/*
+.github/*
+AGENTS.md
+.cursorrules
