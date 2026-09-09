@@ -1,8 +1,5 @@
-import {promises as fs} from 'fs'
-import path from 'path'
 import {Bean, Recipe} from '../types/beans'
-import {DATA_DIR} from '../config/paths'
-import { getDb } from '../db'
+import {getDb} from '../db'
 
 type BeanRow = {
     id: string
@@ -70,26 +67,54 @@ function rowToBean(row: BeanRow, recipes: Recipe[]): Bean {
     }
 }
 
+// Превращает доменный объект Bean в строку таблицы beans
+function beanToRow(bean: Bean): BeanRow {
+    return {
+        id: bean.id,
+        title: bean.title,
+        country: bean.country,
+        description: bean.description,
+        roaster_comment: bean.roasterComment,
+        image_url: bean.imageUrl,
+        process: bean.details.process,
+        region: bean.details.region,
+        variety_json: JSON.stringify(bean.details.variety),
+        sca_score: bean.details.scaScore,
+        notes_json: JSON.stringify(bean.flavorProfile.notes),
+        acidity: bean.flavorProfile.acidity,
+        sweetness: bean.flavorProfile.sweetness,
+        bitterness: bean.flavorProfile.bitterness,
+    }
+}
 
-
-
-async function readBean(fullPath: string): Promise<Bean> {
-    return JSON.parse(await fs.readFile(fullPath, 'utf-8')) as Bean
+// Превращает доменный объект Recipe в строку таблицы recipes
+function recipeToRow(recipe: Recipe, beanId: string): RecipeRow {
+    return {
+        id: recipe.id,
+        bean_id: beanId,
+        method: recipe.method,
+        grind_size: recipe.grindSize,
+        water_temp: recipe.waterTemp,
+        dose_in: recipe.doseIn,
+        dose_out: recipe.doseOut,
+        time_total: recipe.timeTotal,
+        steps_json: JSON.stringify(recipe.steps),
+    }
 }
 
 // ====== GET ======
 export async function findAll(): Promise<Bean[]> {
-    const files = await fs.readdir(DATA_DIR)
-    return Promise.all(
-        files
-            .filter((f) => f.endsWith('.json'))
-            .map((f) => readBean(path.join(DATA_DIR, f)))
-    )
-}
+    const db = getDb()
+    const rows = db.prepare('SELECT * FROM beans').all() as BeanRow[]
 
-// export async function findById(id: string): Promise<Bean | null> {
-//     return (await findAll()).find((b) => b.id === id) ?? null
-// }
+    return rows.map((row) => {
+        const recipeRows = db
+            .prepare('SELECT * FROM recipes WHERE bean_id = ?')
+            .all(row.id) as RecipeRow[]
+
+        return rowToBean(row, recipeRows.map(rowToRecipe))
+    })
+}
 
 export async function findById(id: string): Promise<Bean | null> {
     const db = getDb()
@@ -104,39 +129,85 @@ export async function findById(id: string): Promise<Bean | null> {
 }
 
 // ====== DELETE ======
-
-async function findFileById(id: string): Promise<string | null> {   // не экспортируется = private
-    const files = await fs.readdir(DATA_DIR)
-    for (const f of files) {
-        if (!f.endsWith('.json')) continue
-        const fullPath = path.join(DATA_DIR, f)
-        const bean = await readBean(fullPath)
-        if (bean.id === id) return fullPath
-    }
-    return null
-}
-
 export async function remove(id: string): Promise<boolean> {
-    const fullPath = await findFileById(id)
-    if (!fullPath) return false
-    await fs.unlink(fullPath)
-    return true
+    const db = getDb()
+    const result = db.prepare('DELETE FROM beans WHERE id = ?').run(id)
+    return result.changes > 0
 }
 
 // ====== UPDATE ======
 export async function update(id: string, bean: Bean): Promise<Bean | null> {
-    const fullPath = await findFileById(id)
-    if (!fullPath) return null
-    await fs.writeFile(fullPath, JSON.stringify(bean, null, 2), "utf-8")
+    const db = getDb()
+
+    const existing = db.prepare('SELECT id FROM beans WHERE id = ?').get(id)
+    if (!existing) return null
+    const updateBean = db.prepare(`
+        UPDATE beans
+        SET title           = @title,
+            country         = @country,
+            description     = @description,
+            roaster_comment = @roaster_comment,
+            image_url       = @image_url,
+            process         = @process,
+            region          = @region,
+            variety_json    = @variety_json,
+            sca_score       = @sca_score,
+            notes_json      = @notes_json,
+            acidity         = @acidity,
+            sweetness       = @sweetness,
+            bitterness      = @bitterness
+        WHERE id = @id
+    `)
+
+    const deleteRecipes = db.prepare('DELETE FROM recipes WHERE bean_id = ?')
+
+    const insertRecipe = db.prepare(`
+        INSERT INTO recipes (id, bean_id, method, grind_size, water_temp,
+                             dose_in, dose_out, time_total, steps_json)
+        VALUES (@id, @bean_id, @method, @grind_size, @water_temp,
+                @dose_in, @dose_out, @time_total, @steps_json)
+    `)
+
+    const saveAll = db.transaction((b: Bean) => {
+        updateBean.run(beanToRow(b))
+        deleteRecipes.run(b.id)
+        for (const recipe of b.recipes) {
+            insertRecipe.run(recipeToRow(recipe, b.id))
+        }
+    })
+
+    saveAll(bean)
     return bean
 
 }
 
-// ====== CREATE ======
 export async function create(bean: Bean) {
-    const fullPath = path.join(DATA_DIR, `${bean.id}.json`)
-    const beanText = JSON.stringify(bean, null, 2)
-    await fs.writeFile(fullPath, beanText, "utf-8")
-    return bean;
+    const db = getDb()
+
+    const insertBean = db.prepare(`
+        INSERT INTO beans (id, title, country, description, roaster_comment, image_url,
+                           process, region, variety_json, sca_score, notes_json,
+                           acidity, sweetness, bitterness)
+        VALUES (@id, @title, @country, @description, @roaster_comment, @image_url,
+                @process, @region, @variety_json, @sca_score, @notes_json,
+                @acidity, @sweetness, @bitterness)
+    `)
+
+    const insertRecipe = db.prepare(`
+        INSERT INTO recipes (id, bean_id, method, grind_size, water_temp,
+                             dose_in, dose_out, time_total, steps_json)
+        VALUES (@id, @bean_id, @method, @grind_size, @water_temp,
+                @dose_in, @dose_out, @time_total, @steps_json)
+    `)
+    const insertAll = db.transaction((b: Bean) => {
+        insertBean.run(beanToRow(b))
+
+        for (const recipe of b.recipes) {
+            insertRecipe.run(recipeToRow(recipe, b.id))
+        }
+    })
+
+    insertAll(bean)
+    return bean
 }
 
